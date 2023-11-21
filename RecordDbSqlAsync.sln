@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34309.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecordDbSqlAsync", "RecordDbSqlAsync\RecordDbSqlAsync.csproj", "{7EC8BD86-1F41-4C2C-8E85-048C066A25D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{8954A34D-AB13-4D3E-8183-2F4DF26F027C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7EC8BD86-1F41-4C2C-8E85-048C066A25D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EC8BD86-1F41-4C2C-8E85-048C066A25D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EC8BD86-1F41-4C2C-8E85-048C066A25D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EC8BD86-1F41-4C2C-8E85-048C066A25D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8954A34D-AB13-4D3E-8183-2F4DF26F027C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8954A34D-AB13-4D3E-8183-2F4DF26F027C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8954A34D-AB13-4D3E-8183-2F4DF26F027C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8954A34D-AB13-4D3E-8183-2F4DF26F027C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {06604F57-CC47-42B4-96F1-9AED42EC3713}
+	EndGlobalSection
+EndGlobal
