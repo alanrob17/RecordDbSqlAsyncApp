@@ -61,8 +61,8 @@ Contains the **ArtistModel.cs** and **RecordModel.cs** entities that are used fo
 
 ### ArtistDataAccess.cs
 
-Are the Dapper database access methods that are called by the **Test** methods bring back Artist data.
+Are the SQL Server database access methods that are called by the **Test** methods bring back Artist data.
 
 ### RecordDataAccess.cs
 
-Are the Dapper Record entity routines called by the **Test** methods to bring back Record data.
+Are the SQL Server entity routines called by the **Test** methods to bring back Record data.
