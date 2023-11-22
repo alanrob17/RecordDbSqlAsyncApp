@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using _rt = RecordDbSqlAsync.Tests.RecordTest;
+using _at = RecordDbSqlAsync.Tests.ArtistTest;
+using DAL.Models;
 
 namespace RecordDbSqlAsync
 {
@@ -7,7 +9,57 @@ namespace RecordDbSqlAsync
     {
         static async Task Main(string[] args)
         {
-             await _rt.GetRecordsAsync();
+            //// *** Artist methods ***
+
+            //await _at.GetArtistsAsync();
+
+            //await _at.GetArtistListAsync();
+
+            //var artistId = 114;
+            //await _at.GetArtistByIdAsync(artistId);
+
+            //await _at.GetArtistsWithNoBioAsync();
+
+            //var artist = new Artist
+            //{
+            //    ArtistId = 0,
+            //    FirstName = "Charley",
+            //    LastName = "Robson",
+            //    Biography = "Alan is a Country & Western singer, he likes both kinds of music."
+            //};
+            //await _at.AddArtistAsync(artist);
+
+            //var firstName = "James";
+            //var lastName = "Robson";
+            //var biography = "James is a Hip Hop singer.";
+            //await _at.AddArtistAsync(firstName, lastName, biography);
+
+
+            //var artistId = 848;
+            //var firstName = "James";
+            //var lastName = "Robson";
+            //var name = "James Robson";
+            //var biography = "James is an Australian Rap star.";
+            //await _at.UpdateArtistAsync(artistId, firstName, lastName, name, biography);
+
+
+            //var artist = new Artist
+            //{
+            //    ArtistId = 847,
+            //    FirstName = "Charley",
+            //    LastName = "Robson",
+            //    Name = "Charley Robson",
+            //    Biography = "Charley is a Country & Western singer, he won awards at Tamworth Music Festival."
+            //};
+            //await _at.UpdateArtistAsync(artist);
+
+            var firstName = "Bob";
+            var lastName = "Dylan";
+            await _at.GetArtistIdAsync(firstName, lastName);
+
+            //// *** Record methods ***
+
+            //await _rt.GetRecordsAsync();
 
             //var recordId = 2196;
             //await _rt.GetRecordByIdAsync(recordId);

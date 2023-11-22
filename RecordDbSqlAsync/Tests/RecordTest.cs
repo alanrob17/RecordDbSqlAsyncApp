@@ -16,7 +16,7 @@ namespace RecordDbSqlAsync.Tests
 
             foreach (var record in records)
             {
-                Console.WriteLine($"{record.ArtistName} -- {record.Recorded} - {record.Name} ({record.Media})\n");
+                await Console.Out.WriteLineAsync($"{record.ArtistName} -- {record.Recorded} - {record.Name} ({record.Media})\n");
             }
         }
 
@@ -26,11 +26,11 @@ namespace RecordDbSqlAsync.Tests
 
             if (record != null)
             {
-                Console.WriteLine($"Id: {record.RecordId} - {record.Recorded} - {record.Name} ({record.Media})");
+                await Console.Out.WriteLineAsync($"Id: {record.RecordId} - {record.Recorded} - {record.Name} ({record.Media})");
             }
             else
             {
-                Console.WriteLine($"Record with Id {recordId} not found.");
+                await Console.Out.WriteLineAsync($"Record with Id {recordId} not found.");
             }
         }
 
@@ -40,7 +40,7 @@ namespace RecordDbSqlAsync.Tests
 
             foreach (var record in records)
             {
-                Console.WriteLine($"{record.ArtistName} -- {record.Recorded} - {record.Name} ({record.Media})");
+                await Console.Out.WriteLineAsync($"{record.ArtistName} -- {record.Recorded} - {record.Name} ({record.Media})");
             }
         }
 
@@ -50,7 +50,7 @@ namespace RecordDbSqlAsync.Tests
 
             foreach (var record in records)
             {
-                Console.WriteLine($"{record.RecordId} - {record.Name}");
+                await Console.Out.WriteLineAsync($"{record.RecordId} - {record.Name}");
             }
         }
     }
