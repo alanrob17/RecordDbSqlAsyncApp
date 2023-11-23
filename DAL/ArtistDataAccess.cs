@@ -282,37 +282,73 @@ namespace DAL
             return artistId;
         }
 
-        /// <summary>
-        /// Get the artist id.
-        /// </summary>
-        /// <param name="recordId">The record Id.</param>
-        /// <returns>The <see cref="int"/> artist Id.</returns>
-        public int GetArtistId(int recordId)
+        public static async Task<int> GetArtistIdAsync(int recordId)
         {
             var artistId = -1;
 
             using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
             {
-                var cmd = new SqlCommand("up_getArtistIdFromRecordId", cn) { CommandType = CommandType.StoredProcedure };
+                var cmd = new SqlCommand("up_getArtistIdFromRecord", cn) { CommandType = CommandType.StoredProcedure };
 
-                cmd.Parameters.AddWithValue("RecordId", recordId);
-
-                using (cn)
+                cmd.Parameters.AddWithValue("@RecordId", recordId);
+                var parArtistId = new SqlParameter("@artistId", SqlDbType.Int)
                 {
-                    cn.Open();
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(parArtistId);
 
-                    artistId = (int)cmd.ExecuteScalar();
+                await cn.OpenAsync();
+
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                    artistId = (int)parArtistId.Value;
+                }
+                catch (Exception)
+                {
+                    artistId = 0;
                 }
             }
 
             return artistId;
         }
 
-        /// <summary>
-        /// Delete an existing Artist record.
-        /// </summary>
-        /// <param name="artistId">The artist Id.</param>
-        public void Delete(int artistId)
+
+        public static async Task<Artist> GetArtistByNameAsync(string name)
+        {
+            using (var connection = new SqlConnection(_ap.Instance.ConnectionString))
+            {
+                await connection.OpenAsync();
+
+                var sql = "up_GetFullArtistByName";
+                using (var cmd = new SqlCommand(sql, connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@Name", name);
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Artist
+                            {
+                                ArtistId = reader.Field<int>("ArtistId"),
+                                FirstName = reader.Field<string>("FirstName"),
+                                LastName = reader.Field<string>("LastName"),
+                                Name = reader.Field<string>("Name"),
+                                Biography = reader.Field<string>("Biography")
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
+
+        public static async Task DeleteAsync(int artistId)
         {
             using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
             {
@@ -320,21 +356,20 @@ namespace DAL
 
                 cmd.Parameters.AddWithValue("@ArtistId", artistId);
 
-                using (cn)
+                await cn.OpenAsync();
+
+                try
                 {
-                    cn.Open();
-                    cmd.ExecuteNonQuery();
+                    await cmd.ExecuteNonQueryAsync();
+                }
+                catch (Exception)
+                {
+                    artistId = 0;
                 }
             }
         }
 
-        /// <summary>
-        /// Get a biography.
-        /// </summary>
-        /// <param name="recordId">The record Id.</param>
-        /// <returns>
-        /// The <see cref="object"/>biography.</returns>
-        public string GetBiography(int recordId)
+        public static async Task<string> GetBiographyAsync(int recordId)
         {
             var biography = string.Empty;
 
@@ -344,82 +379,75 @@ namespace DAL
 
                 cmd.Parameters.AddWithValue("recordId", recordId);
 
-                using (cn)
-                {
-                    cn.Open();
+                await cn.OpenAsync();
 
-                    biography = (string)cmd.ExecuteScalar();
-                }
+                biography = (string)await cmd.ExecuteScalarAsync();
             }
 
-            // add some spacing
             return biography;
         }
 
-        /// <summary>
-        /// ToString method shows an instances properties
-        /// </summary>
-        /// <param name="artist">The artist.</param>
-        /// <returns>The <see cref="string"/> artist record as a string.</returns>
-        public static string ToString(Artist artist)
+        public static async Task<Artist> GetArtistByRecordIdAsync(int recordId)
         {
-            var artistDetails = new StringBuilder();
-
-            artistDetails.Append("<strong>ArtistId: </strong>" + artist.ArtistId + "<br/>");
-
-            if (!string.IsNullOrEmpty(artist.FirstName))
+            using (var connection = new SqlConnection(_ap.Instance.ConnectionString))
             {
-                artistDetails.Append("<strong>First Name: </strong>" + artist.FirstName + "<br/>");
+                await connection.OpenAsync();
+
+                var sql = "up_ArtistSelectByRecordId";
+                using (var cmd = new SqlCommand(sql, connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@RecordId", recordId);
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Artist
+                            {
+                                ArtistId = reader.Field<int>("ArtistId"),
+                                FirstName = reader.Field<string>("FirstName"),
+                                LastName = reader.Field<string>("LastName"),
+                                Name = reader.Field<string>("Name"),
+                                Biography = reader.Field<string>("Biography")
+                            };
+                        }
+                    }
+                }
             }
 
-            artistDetails.Append("<strong>Last Name: </strong>" + artist.LastName + "<br/>");
-
-            if (!string.IsNullOrEmpty(artist.Name))
-            {
-                artistDetails.Append("<strong>Name: </strong>" + artist.Name + "<br/>");
-            }
-
-            if (!string.IsNullOrEmpty(artist.Biography))
-            {
-                artistDetails.Append("<strong>Biography: </strong>" + artist.Biography + "<br/>");
-            }
-
-            return artistDetails.ToString();
+            return null;
         }
 
-        /// <summary>
-        /// Get artist object by record id.
-        /// </summary>
-        /// <param name="recordId">The record id.</param>
-        /// <returns>The <see cref="Artist"/> artist object.</returns>
-        public Artist GetArtistByRecordId(int recordId)
+        public static async Task<int> GetNoBiographyCountAsync()
         {
-            var dt = new DataTable();
+            var count = 0;
 
             using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
             {
-                var sql = "up_ArtistSelectByRecordId";
-                var cmd = new SqlCommand(sql, cn) { CommandType = CommandType.StoredProcedure };
-                cmd.Parameters.AddWithValue("@RecordId", recordId);
+                var cmd = new SqlCommand("up_NoBiographyCount", cn) { CommandType = CommandType.StoredProcedure };
 
-                var da = new SqlDataAdapter(cmd);
-                da.Fill(dt);
+                var parCount = new SqlParameter("@Count", SqlDbType.Int)
+                {
+                    Direction = ParameterDirection.Output
+                };
+                cmd.Parameters.Add(parCount);
+
+                await cn.OpenAsync();
+
+                try
+                {
+                    await cmd.ExecuteNonQueryAsync();
+                    count = (int)parCount.Value;
+                }
+                catch (Exception)
+                {
+                    count = 0;
+                }
             }
 
-            var entity =
-              (from dr in dt.AsEnumerable()
-               select new Artist
-               {
-                   ArtistId = Convert.ToInt32(dr["ArtistId"]),
-                   FirstName = dr["FirstName"].ToString(),
-                   LastName = dr["LastName"].ToString(),
-                   Name = dr["Name"].ToString(),
-                   Biography = dr["Biography"].ToString()
-               }).FirstOrDefault();
-
-            return entity;
+            return count;
         }
-
 
         #endregion
     }

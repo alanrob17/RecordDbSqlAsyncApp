@@ -36,7 +36,28 @@ namespace RecordDbSqlAsync.Tests
         {
             var artist = await _ad.GetArtistByIdAsync(artistId);
 
-            await Console.Out.WriteLineAsync($"Id: {artist.ArtistId} - {artist.FirstName} {artist.LastName} --\n {artist.Biography}\n");
+            string artistData = ArtistTest.ToString(artist);
+
+            await Console.Out.WriteLineAsync(artistData);
+        }
+
+        internal static async Task GetArtistByRecordIdAsync(int recordId)
+        {
+            var artist = await _ad.GetArtistByRecordIdAsync(recordId);
+
+            string artistData = ArtistTest.ToString(artist);
+
+            await Console.Out.WriteLineAsync(artistData);
+        }
+
+
+        internal static async Task GetArtistByNameAsync(string name)
+        {
+            var artist = await _ad.GetArtistByNameAsync(name);
+
+            string artistData = ArtistTest.ToString(artist);
+
+            await Console.Out.WriteLineAsync(artistData);
         }
 
         internal static async Task GetArtistsWithNoBioAsync()
@@ -47,6 +68,14 @@ namespace RecordDbSqlAsync.Tests
             {
                 await Console.Out.WriteLineAsync($"Id: {artist.ArtistId} - {artist.Name}");
             }
+        }
+
+
+        internal static async Task GetNoBiographyCountAsync()
+        {
+            int count = await _ad.GetNoBiographyCountAsync();
+
+            await Console.Out.WriteLineAsync($"Number of missing biographies: {count}.");
         }
 
         internal static async Task AddArtistAsync(Artist artist)
@@ -118,6 +147,84 @@ namespace RecordDbSqlAsync.Tests
             {
                 await Console.Out.WriteLineAsync($"Artist Id couldn't be found!");
             }
+        }
+
+        internal static async Task GetArtistIdAsync(int recordId)
+        {
+            var artistId = await _ad.GetArtistIdAsync(recordId);
+
+            if (artistId > 0)
+            {
+                await Console.Out.WriteLineAsync($"Artist Id from Record Id: {recordId} is {artistId}");
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync($"Artist Id couldn't be found!");
+            }
+        }
+
+        internal static async Task DeleteAsync(int artistId)
+        {
+            await _ad.DeleteAsync(artistId);
+
+            var artist = await _ad.GetArtistByIdAsync(artistId);
+        
+            if (artist != null)
+            {
+                await Console.Out.WriteLineAsync("Artist not deleted!");
+            }
+            else 
+            {
+                await Console.Out.WriteLineAsync("Artist deleted.");
+            }
+        }
+
+        internal static async Task GetBiographyAsync(int recordId)
+        {
+            var biography = await _ad.GetBiographyAsync(recordId);
+
+            if (biography != null)
+            {
+                await Console.Out.WriteLineAsync($"Biography:\n\n{biography}");
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync($"Biography doesn't exist!");
+            }
+        }
+
+        internal static async Task ArtistHtmlAsync(int artistId)
+        {
+            var artist = await _ad.GetArtistByIdAsync(artistId);
+            var message = artist.ArtistId > 0 ? $"<p><strong>Id:</strong> {artist.ArtistId}</p>\n<p><strong>Name:</strong> {artist.FirstName} {artist.LastName}</p>\n<p><strong>Biography:</strong></p>\n<div>{artist.Biography}</p></div>" : "ERROR: Artist not found!";
+
+            Console.WriteLine(message);
+        }
+
+        public static string ToString(Artist artist)
+        {
+            var artistDetails = new StringBuilder();
+
+            artistDetails.Append("<strong>ArtistId: </strong>" + artist.ArtistId + "<br/>");
+
+            if (!string.IsNullOrEmpty(artist.FirstName))
+            {
+                artistDetails.Append("<strong>First Name: </strong>" + artist.FirstName + "<br/>");
+            }
+
+            artistDetails.Append("<strong>Last Name: </strong>" + artist.LastName + "<br/>");
+
+            if (!string.IsNullOrEmpty(artist.Name))
+            {
+                artistDetails.Append("<strong>Name: </strong>" + artist.Name + "<br/>");
+            }
+
+            if (!string.IsNullOrEmpty(artist.Biography))
+            {
+                artistDetails.Append("<strong>Biography: </strong>" + artist.Biography + "<br/>");
+            }
+
+            return artistDetails.ToString();
         }
     }
 }

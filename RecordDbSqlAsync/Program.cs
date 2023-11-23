@@ -18,7 +18,15 @@ namespace RecordDbSqlAsync
             //var artistId = 114;
             //await _at.GetArtistByIdAsync(artistId);
 
+            //var recordId = 71;
+            //await _at.GetArtistByRecordIdAsync(recordId);
+
+            //var name = "Bruce Cockburn";
+            //await _at.GetArtistByNameAsync(name);
+
             //await _at.GetArtistsWithNoBioAsync();
+
+            // await _at.GetNoBiographyCountAsync();
 
             //var artist = new Artist
             //{
@@ -53,9 +61,21 @@ namespace RecordDbSqlAsync
             //};
             //await _at.UpdateArtistAsync(artist);
 
-            var firstName = "Bob";
-            var lastName = "Dylan";
-            await _at.GetArtistIdAsync(firstName, lastName);
+            //var firstName = "Bob";
+            //var lastName = "Dylan";
+            //await _at.GetArtistIdAsync(firstName, lastName);
+
+            //var recordId = 2196;
+            //await _at.GetArtistIdAsync(recordId);
+
+            //var artistId = 848;
+            //await _at.DeleteAsync(artistId);
+
+            //var artistId = 93;
+            //await _at.ArtistHtmlAsync(artistId);
+
+            var recordId = 2196;
+            await _at.GetBiographyAsync(recordId);
 
             //// *** Record methods ***
 
