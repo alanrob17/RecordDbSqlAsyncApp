@@ -9,6 +9,7 @@ namespace RecordDbSqlAsync
     {
         static async Task Main(string[] args)
         {
+            //// -----------------------------------------------------------------------------
             //// *** Artist methods ***
 
             //await _at.GetArtistsAsync();
@@ -33,7 +34,7 @@ namespace RecordDbSqlAsync
             //    ArtistId = 0,
             //    FirstName = "Charley",
             //    LastName = "Robson",
-            //    Biography = "Alan is a Country & Western singer, he likes both kinds of music."
+            //    Biography = "Charley is a Country & Western singer, he likes both kinds of music."
             //};
             //await _at.AddArtistAsync(artist);
 
@@ -74,9 +75,10 @@ namespace RecordDbSqlAsync
             //var artistId = 93;
             //await _at.ArtistHtmlAsync(artistId);
 
-            var recordId = 2196;
-            await _at.GetBiographyAsync(recordId);
+            //var recordId = 2196;
+            //await _at.GetBiographyAsync(recordId);
 
+            //// -----------------------------------------------------------------------------
             //// *** Record methods ***
 
             //await _rt.GetRecordsAsync();
@@ -89,6 +91,83 @@ namespace RecordDbSqlAsync
 
             //var artistId = 114;
             //await _rt.SelectArtistRecordsAsync(artistId);
+
+            // await _rt.SelectRecordReviewsAsync();
+
+            //var name = "Cutting Edge";
+            //await _rt.GetRecordByNameAsync(name);
+
+            //var artistId = 114;
+            //await _rt.GetRecordsByArtistIdAsync(artistId);
+
+            //var dateString = "2023/09/27 12:00:00 AM";
+            //DateTime date = DateTime.Parse(dateString, System.Globalization.CultureInfo.InvariantCulture);
+            //var record = new Record
+            //{
+            //    RecordId = 0,
+            //    ArtistId = 849,
+            //    Name = "Lost In Wonderland",
+            //    Field = "Jazz",
+            //    Recorded = 2023,
+            //    Label = "Rubber Dubber",
+            //    Pressing = "Aus",
+            //    Rating = "****",
+            //    Discs = 1,
+            //    Media = "CD",
+            //    Bought = date,
+            //    Cost = 26.99m,
+            //    CoverName = null,
+            //    Review = "This is Charley's first album",
+            //};
+            //await _rt.CreateRecordAsync(record);
+
+            //var dateString = "2023/10/28 12:00:00 AM";
+            //DateTime date = DateTime.Parse(dateString, System.Globalization.CultureInfo.InvariantCulture);
+            //var record = new Record
+            //{
+            //    RecordId = 5269,
+            //    Name = "Lost In A Winter Wonderland",
+            //    Field = "Rock",
+            //    Recorded = 2023,
+            //    Label = "Rubber Dubber Dubber",
+            //    Pressing = "Am",
+            //    Rating = "***",
+            //    Discs = 2,
+            //    Media = "CD",
+            //    Bought = date,
+            //    Cost = 31.50m,
+            //    CoverName = null,
+            //    Review = "This is Charley's first Christmas album",
+            //};
+            //await _rt.UpdateRecordAsync(record);
+
+            //var recordId = 5269;
+            //await _rt.DeleteRecordAsync(recordId);
+
+            var year = 1908;
+            await _rt.GetRecordsByYearAsync(year);
+
+            //await _rt.GetTotalNumberOfCDsAsync(); 
+            //await _rt.GetTotalNumberOfDiscsAsync(); 
+            //await _rt.GetTotalNumberOfRecordsAsync(); 
+            //await _rt.GetTotalNumberOfBluraysAsync();
+            //await _rt.GetRecordListAsync();
+            //await _rt.GetRecordListMultipleTablesAsync();
+            //await _rt.CountDiscsAsync(string.Empty);
+            //await _rt.CountDiscsAsync("DVD");
+            //await _rt.CountDiscsAsync("CD");
+            //await _rt.CountDiscsAsync("R");
+            //await _rt.GetArtistRecordEntityAsync(2196);
+            //await _rt.GetArtistNumberOfRecordsAsync(114);
+            //await _rt.GetRecordDetailsAsync(2196);
+            //await _rt.GetArtistNameFromRecordAsync(2196);
+            //await _rt.GetDiscCountForYearAsync(1974);
+            //await _rt.GetBoughtDiscCountForYearAsync("2000");
+            //await _rt.GetNoRecordReviewAsync();
+            //await _rt.GetNoReviewCountAsync();
+            //await _rt.GetTotalArtistCostAsync();
+            //await _rt.GetTotalArtistDiscsAsync();
+            //await _rt.RecordHtmlAsync(2196);
         }
     }
 }
