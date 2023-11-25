@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using DAL.Models;
 using _rd = DAL.RecordDataAccess;
-using _at = DAL.ArtistDataAccess;
+using _ad = DAL.ArtistDataAccess;
 
 namespace RecordDbSqlAsync.Tests
 {
@@ -14,7 +14,7 @@ namespace RecordDbSqlAsync.Tests
     {
         public static async Task<string> ToString(Record record)
         {
-            var artist = await _at.GetArtistByIdAsync(record.ArtistId);
+            var artist = await _ad.GetArtistByIdAsync(record.ArtistId);
             var str = new StringBuilder();
 
             str.Append("<strong>RecordId: </strong>" + record.RecordId + "<br/>");
@@ -122,7 +122,7 @@ namespace RecordDbSqlAsync.Tests
 
         internal static async Task GetRecordsByArtistIdAsync(int artistId)
         {
-            var artist = await _at.GetArtistByIdAsync(artistId);
+            var artist = await _ad.GetArtistByIdAsync(artistId);
 
             if (artist == null)
             {
@@ -156,7 +156,7 @@ namespace RecordDbSqlAsync.Tests
 
         internal static async Task UpdateRecordAsync(Record record)
         {
-            var newRecordId = await _rd.UpdateArtistAsync(record);
+            var newRecordId = await _rd.UpdateRecordAsync(record);
 
             if (newRecordId > 0)
             {
@@ -166,7 +166,20 @@ namespace RecordDbSqlAsync.Tests
             {
                 await Console.Out.WriteLineAsync($"Record wasn't updated!");
             }
+        }
 
+        internal static async Task UpdateRecordAsync(int recordId, string name, string field, int recorded, string label, string pressing, string rating, int discs, string media, DateTime bought, decimal cost, string coverName, string review)
+        {
+            var newRecordId = await _rd.UpdateRecordAsync(recordId, name, field, recorded, label, pressing, rating, discs, media, bought, cost, coverName, review);
+
+            if (newRecordId > 0)
+            {
+                await Console.Out.WriteLineAsync($"Updated RecordId: {newRecordId}");
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync($"Record wasn't updated!");
+            }
         }
 
         internal static async Task DeleteRecordAsync(int recordId)
@@ -190,6 +203,43 @@ namespace RecordDbSqlAsync.Tests
             int count = await _rd.GetRecordsByYearAsync(year);
 
             await Console.Out.WriteLineAsync($"Number of Records recorded in {year} is {count}.");
+        }
+
+        internal static async Task CreateRecordAsync(int artistId, string name, string field, int recorded, string label, string pressing, string rating, int discs, string media, DateTime bought, decimal cost, string coverName, string review)
+        {
+            var recordId = await _rd.InsertRecordAsync(artistId, name, field, recorded, label, pressing, rating, discs, media, bought, cost, coverName, review);
+
+            if (recordId > 0)
+            {
+                await Console.Out.WriteLineAsync($"New RecordId: {recordId}");
+            }
+            else
+            {
+                await Console.Out.WriteLineAsync($"Record not added to the database!");
+            }
+        }
+
+        internal static async Task GetTotalNumberOfCDsAsync()
+        {
+            int count = await _rd.GetTotalNumberOfCDsAsync();
+
+            await Console.Out.WriteLineAsync($"Number of CD's bought is {count}.");
+        }
+
+        internal static async Task CountDiscsAsync(string show)
+        {
+            var count = await _rd.CountDiscsAsync(show);
+
+            await Console.Out.WriteLineAsync($"Number of {show} bought is {count}.");
+        }
+
+        internal static async Task GetArtistNumberOfRecordsAsync(int artistId)
+        {
+            var artist = await _ad.GetArtistByIdAsync(artistId);
+
+            string count = await _rd.GetArtistNumberOfRecordsAsync(artistId);
+
+            await Console.Out.WriteLineAsync($"{artist.Name} has {count} discs.");
         }
     }
 }

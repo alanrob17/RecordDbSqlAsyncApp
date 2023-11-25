@@ -200,7 +200,7 @@ namespace DAL
             return records;
         }
 
-        public int Insert(int artistId, string name, string field, int recorded, string label, string pressing, string rating, int discs, string media, DateTime bought, decimal cost, string coverName, string review)
+        public static async Task<int> InsertRecordAsync(int artistId, string name, string field, int recorded, string label, string pressing, string rating, int discs, string media, DateTime bought, decimal cost, string coverName, string review)
         {
             var recordId = -1; // 0 is used for record is already in the db.
 
@@ -222,30 +222,32 @@ namespace DAL
                 cmd.Parameters.AddWithValue("Cost", cost);
                 cmd.Parameters.AddWithValue("CoverName", coverName);
                 cmd.Parameters.AddWithValue("Review", review);
-                cmd.Parameters.AddWithValue("FreeDBID", string.Empty);
-                cmd.Parameters.Add("@ReturnValue", SqlDbType.Int).Direction = ParameterDirection.ReturnValue;
+                var parRecordId = new SqlParameter("@RecordId", SqlDbType.Int, 4)
+                {
+                    Direction = ParameterDirection.ReturnValue
+                };
+                cmd.Parameters.Add(parRecordId);
 
                 using (cn)
                 {
-                    cn.Open();
-                    cmd.ExecuteNonQuery();
-                    recordId = (int)cmd.Parameters["@ReturnValue"].Value;
+                    await cn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                    recordId = (int)parRecordId.Value;
                 }
             }
 
             return recordId;
         }
 
-        public int Update(int recordId, int artistId, string name, string field, int recorded, string label, string pressing, string rating, int discs, string media, DateTime bought, decimal cost, string coverName, string review)
+        public static async Task<int> UpdateRecordAsync(int recordId, string name, string field, int recorded, string label, string pressing, string rating, int discs, string media, DateTime bought, decimal cost, string coverName, string review)
         {
             var newRecordId = -1;
 
             using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
             {
-                var cmd = new SqlCommand("up_UpdateRecord", cn) { CommandType = CommandType.StoredProcedure };
+                var cmd = new SqlCommand("adm_UpdateRecord", cn) { CommandType = CommandType.StoredProcedure };
 
                 cmd.Parameters.AddWithValue("RecordId", recordId);
-                cmd.Parameters.AddWithValue("ArtistId", artistId);
                 cmd.Parameters.AddWithValue("Name", name);
                 cmd.Parameters.AddWithValue("Field", field);
                 cmd.Parameters.AddWithValue("Recorded", recorded);
@@ -258,53 +260,48 @@ namespace DAL
                 cmd.Parameters.AddWithValue("Cost", cost);
                 cmd.Parameters.AddWithValue("CoverName", coverName);
                 cmd.Parameters.AddWithValue("Review", review);
-                cmd.Parameters.Add("@Result", SqlDbType.Int).Direction = ParameterDirection.Output;
+                var parResult = new SqlParameter("@Result", SqlDbType.Int, 4)
+                {
+                    Direction = ParameterDirection.ReturnValue
+                };
+                cmd.Parameters.Add(parResult);
 
                 using (cn)
                 {
-                    cn.Open();
-                    cmd.ExecuteNonQuery();
-                    newRecordId = (int)cmd.Parameters["@Result"].Value;
+                    await cn.OpenAsync();
+                    await cmd.ExecuteNonQueryAsync();
+                    newRecordId = (int)parResult.Value;
                 }
             }
 
             return newRecordId;
         }
 
-
-        public string CountDiscs(string show)
+        public static async Task<string> CountDiscsAsync(string show)
         {
-            int discs = 0;
+            var discs = 0;
 
-            if (show == null)
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
             {
-                throw new ArgumentNullException("show");
-            }
-            else
-            {
-                using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+                var cmd = new SqlCommand("up_CountDiscs", cn) { CommandType = CommandType.StoredProcedure };
+
+                cmd.Parameters.AddWithValue("@Show", show);
+
+                await cn.OpenAsync();
+
+                var result = await cmd.ExecuteScalarAsync();
+
+                // Check if the result is not null before casting
+                if (result != null && result != DBNull.Value)
                 {
-                    var cmd = new SqlCommand("up_CountDiscs", cn) { CommandType = CommandType.StoredProcedure };
-
-                    cmd.Parameters.AddWithValue("show", show);
-
-                    using (cn)
-                    {
-                        cn.Open();
-                        discs = (int)cmd.ExecuteScalar();
-                    }
+                    discs = (int)result;
                 }
             }
 
             return discs.ToString(CultureInfo.InvariantCulture);
         }
 
-        /// <summary>
-        /// Get Artist's total number of discs.
-        /// </summary>
-        /// <param name="artistId">The artist id.</param>
-        /// <returns>The <see cref="int"/> number of discs.</returns>
-        public string GetArtistNumberOfRecords(int artistId)
+        public static async Task<string> GetArtistNumberOfRecordsAsync(int artistId)
         {
             var discs = 0;
 
@@ -314,25 +311,20 @@ namespace DAL
 
                 cmd.Parameters.AddWithValue("@artistId", artistId);
 
-                using (cn)
-                {
-                    cn.Open();
-                    discs = (int)cmd.ExecuteScalar();
-                }
-            }
+                await cn.OpenAsync();
 
-            return discs.ToString(CultureInfo.InvariantCulture);
+                var result = await cmd.ExecuteScalarAsync();
+
+                // I'm getting a null back instead of 0
+                if (result != null && result != DBNull.Value)
+                {
+                    discs = (int)result;
+                }
+
+                return discs.ToString(CultureInfo.InvariantCulture);
+            }
         }
 
-        /// <summary>
-        /// Get the total number of all records, DVD's and CD's for the year.
-        /// </summary>
-        /// <param name="year">
-        /// The year.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
         public string GetRecordedYearNumber(int year)
         {
             var discs = 0;
@@ -527,7 +519,7 @@ namespace DAL
             return recordId;
         }
 
-        public static async Task<int> UpdateArtistAsync(Record record)
+        public static async Task<int> UpdateRecordAsync(Record record)
         {
             var newRecordId = -1;
 
@@ -608,33 +600,53 @@ namespace DAL
             }
         }
 
-    //    /// <summary>
-    //    /// Get total cost for each artist.
-    //    /// </summary>
-    //    /// <returns>The <see cref="IEnumerable"/>list of artists and their total costs.</returns>
-    //    public IEnumerable<Total> GetTotalCosts()
-    //    {
-    //        var dt = new DataTable();
+        public static async Task<int> GetTotalNumberOfCDsAsync()
+        {
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            {
+                var cmd = new SqlCommand("adm_GetTotalCDCount", cn) { CommandType = CommandType.StoredProcedure };
 
-    //        using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
-    //        {
-    //            var sql = "sp_getTotalsForEachArtist";
-    //            var cmd = new SqlCommand(sql, cn) { CommandType = CommandType.StoredProcedure };
+                await cn.OpenAsync();
 
-    //            var da = new SqlDataAdapter(cmd);
-    //            da.Fill(dt);
-    //        }
+                var result = await cmd.ExecuteScalarAsync();
 
-    //        var query = from dr in dt.AsEnumerable()
-    //                    select new Total
-    //                    {
-    //                        ArtistId = Convert.ToInt32(dr["ArtistId"]),
-    //                        Name = dr["Name"].ToString(),
-    //                        TotalDiscs = Convert.ToInt32(dr["TotalDiscs"]),
-    //                        TotalCost = Convert.ToDecimal(dr["TotalCost"])
-    //                    };
+                // I'm getting a null back instead of 0
+                if (result != null && result != DBNull.Value)
+                {
+                    return (int)result;
+                }
 
-    //        return query.ToList();
-    //    }
+                return 0;
+            }
+        }
+
+        //    /// <summary>
+        //    /// Get total cost for each artist.
+        //    /// </summary>
+        //    /// <returns>The <see cref="IEnumerable"/>list of artists and their total costs.</returns>
+        //    public IEnumerable<Total> GetTotalCosts()
+        //    {
+        //        var dt = new DataTable();
+
+        //        using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+        //        {
+        //            var sql = "sp_getTotalsForEachArtist";
+        //            var cmd = new SqlCommand(sql, cn) { CommandType = CommandType.StoredProcedure };
+
+        //            var da = new SqlDataAdapter(cmd);
+        //            da.Fill(dt);
+        //        }
+
+        //        var query = from dr in dt.AsEnumerable()
+        //                    select new Total
+        //                    {
+        //                        ArtistId = Convert.ToInt32(dr["ArtistId"]),
+        //                        Name = dr["Name"].ToString(),
+        //                        TotalDiscs = Convert.ToInt32(dr["TotalDiscs"]),
+        //                        TotalCost = Convert.ToDecimal(dr["TotalCost"])
+        //                    };
+
+        //        return query.ToList();
+        //    }
     }
 }
