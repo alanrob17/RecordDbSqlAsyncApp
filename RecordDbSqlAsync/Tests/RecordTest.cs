@@ -12,6 +12,20 @@ namespace RecordDbSqlAsync.Tests
 {
     internal class RecordTest
     {
+        public static string ToShortDate(DateTime bought)
+        {
+            var shortDate = "unk";
+
+            if (bought != null)
+            {
+                // DateTime dt = Convert.ToDateTime(bought);
+
+                shortDate = Heinemann.Components.Dates.ShortDateString(bought);
+            }
+
+            return shortDate;
+        }
+
         public static async Task<string> ToString(Record record)
         {
             var artist = await _ad.GetArtistByIdAsync(record.ArtistId);
@@ -31,12 +45,12 @@ namespace RecordDbSqlAsync.Tests
 
             if (record.Bought > DateTime.MinValue)
             {
-                str.Append("<strong>Bought: </strong>" + record.Bought.ToShortDateString() + "<br/>");
+                str.Append("<strong>Bought: </strong>" + ToShortDate(record.Bought) + "<br/>");
             }
 
             if (!string.IsNullOrEmpty(record.Cost.ToString(CultureInfo.InvariantCulture)))
             {
-                str.Append("<strong>Cost: </strong>" + record.Cost + "<br/>");
+                str.Append($"<strong>Cost: </strong>$" + string.Format("{0:0.00}", record.Cost) + "<br/>");
             }
 
             if (!string.IsNullOrEmpty(record.CoverName))
@@ -240,6 +254,123 @@ namespace RecordDbSqlAsync.Tests
             string count = await _rd.GetArtistNumberOfRecordsAsync(artistId);
 
             await Console.Out.WriteLineAsync($"{artist.Name} has {count} discs.");
+        }
+
+        internal static async Task GetNoRecordReviewAsync()
+        {
+            var records = await _rd.NoRecordReviewsAsync();
+
+            foreach (var record in records)
+            {
+                await Console.Out.WriteLineAsync($"{record.ArtistName} -- {record.RecordId} - {record.Name}.");
+            }
+        }
+
+        internal static async Task GetNoReviewCountAsync()
+        {
+            int count = await _rd.GetNoReviewCountAsync();
+
+            await Console.Out.WriteLineAsync($"Number of Albums with no review is {count}.");
+        }
+
+        internal static async Task GetBoughtDiscCountForYearAsync(int year)
+        {
+            int count = await _rd.GetBoughtDiscCountForYear(year);
+
+            await Console.Out.WriteLineAsync($"Number of Albums bought in {year} is {count}.");
+        }
+
+        internal static async Task GetTotalNumberOfDiscsAsync()
+        {
+            int count = await _rd.GetTotalNumberOfDiscsAsync();
+
+            await Console.Out.WriteLineAsync($"Total number of Albums is {count}.");
+        }
+
+        internal static async Task GetTotalNumberOfBluraysAsync()
+        {
+            int count = await _rd.GetTotalNumberOfBluraysAsync();
+
+            await Console.Out.WriteLineAsync($"Total number of Blu-rays is {count}.");
+        }
+
+        internal static async Task GetRecordListAsync()
+        {
+            var artists = await _ad.GetArtistsAsync();
+            var records = await _rd.SelectAsync();
+
+            foreach (var artist in artists)
+            {
+                await Console.Out.WriteLineAsync($"{artist.Name}:\n");
+
+                var ar = from r in records
+                         where artist.ArtistId == r.ArtistId
+                         orderby r.Recorded descending
+                         select r;
+
+                foreach (var rec in ar)
+                {
+                    await Console.Out.WriteLineAsync($"\t{rec.Recorded} - {rec.Name} ({rec.Media})");
+                }
+
+                await Console.Out.WriteLineAsync();
+            }
+        }
+
+        internal static async Task GetRecordDetailsAsync(int recordId)
+        {
+            Record record = await _rd.GetRecordDetailsAsync(recordId);
+
+            if (record != null)
+            {
+                var review = string.IsNullOrEmpty(record.Review) ? "No Review" : (record.Review.Length > 60 ? record.Review.Substring(0, 60) + "..." : record.Review);
+
+                await Console.Out.WriteLineAsync($"{record.ArtistName}:\n\t{record.Recorded} - {record.Name} ({record.Media})\n\t\t{record.Pressing} - {record.Rating} - {ToShortDate(record.Bought)} - ${string.Format("{0:0.00}", record.Cost)}\n\t\t{review}");
+            }
+        }
+
+        internal static async Task GetArtistNameFromRecordAsync(int recordId)
+        {
+            string name = await _rd.GetArtistNameFromRecordAsync(recordId);
+
+            if (name != null)
+            {
+                await Console.Out.WriteLineAsync($"Recordid: {recordId} - Artist name: {name}");
+            }
+        }
+
+        internal static async Task GetTotalArtistCostAsync()
+        {
+            List<dynamic> data = new();
+
+            data = await _rd.GetTotalArtistCostAsync();
+
+            foreach (var item in data) 
+            {
+                await Console.Out.WriteLineAsync($"Total cost for {item.Name} with {item.TotalDiscs} discs is ${item.TotalCost:F2}.");
+            }
+        }
+
+        internal static async Task GetTotalArtistDiscsAsync()
+        {
+            List<dynamic> data = await _rd.GetTotalArtistDiscsAsync();
+
+            foreach (var item in data)
+            {
+                await Console.Out.WriteLineAsync($"Total discs for {item.Name} is {item.TotalDiscs}.");
+            }
+        }
+
+        internal static async Task RecordHtmlAsync(int recordId)
+        {
+            Record record = await _rd.GetRecordDetailsAsync(recordId);
+
+            string recordString = await RecordTest.ToString(record);
+
+            if (record != null)
+            {
+                await Console.Out.WriteLineAsync(recordString);
+            }
         }
     }
 }

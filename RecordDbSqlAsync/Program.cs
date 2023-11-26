@@ -3,6 +3,7 @@ using _rt = RecordDbSqlAsync.Tests.RecordTest;
 using _at = RecordDbSqlAsync.Tests.ArtistTest;
 using DAL.Models;
 using Microsoft.Extensions.Hosting;
+using Microsoft.VisualBasic;
 
 namespace RecordDbSqlAsync
 {
@@ -13,7 +14,7 @@ namespace RecordDbSqlAsync
             //// -----------------------------------------------------------------------------
             //// *** Artist methods ***
 
-            //await _at.GetArtistsAsync();
+            await _at.GetArtistsAsync();
 
             //await _at.GetArtistListAsync();
 
@@ -163,7 +164,7 @@ namespace RecordDbSqlAsync
             //var dateString = "2023/11/23 12:00:00 AM";
             //DateTime date = DateTime.Parse(dateString, System.Globalization.CultureInfo.InvariantCulture);
             //var recordId = 5270;
-            //    var name = "Lost In A Winter Wonderland";
+            //var name = "Lost In A Winter Wonderland";
             //var field = "Rock";
             //var recorded = 2023;
             //var label = "Rubber Dubber Ducky";
@@ -183,13 +184,14 @@ namespace RecordDbSqlAsync
             //var artistId = 114;
             //await _rt.GetArtistNumberOfRecordsAsync(artistId);
 
-            var year = 1987;
-            await _rt.GetRecordsByYearAsync(year);
-            // GetRecordedYearNumber(int year)
+            //var year = 1909;
+            //await _rt.GetRecordsByYearAsync(year);
 
-            //await _rt.GetTotalNumberOfCDsAsync();
+            // await _rt.GetNoRecordReviewAsync();
 
-            //await _rt.CountDiscsAsync("ALL");
+            // await _rt.GetNoReviewCountAsync();
+
+            // await _rt.CountDiscsAsync("ALL");
 
             // await _rt.CountDiscsAsync("DVDs");
 
@@ -197,25 +199,29 @@ namespace RecordDbSqlAsync
 
             // await _rt.CountDiscsAsync("Records");
 
+            //var year = 1974;
+            //await _rt.GetBoughtDiscCountForYearAsync(year);
 
-            //await _rt.GetTotalNumberOfDiscsAsync(); 
-            //await _rt.GetTotalNumberOfRecordsAsync(); 
-            //await _rt.GetTotalNumberOfBluraysAsync();
-            //await _rt.GetRecordListAsync();
-            //await _rt.GetRecordListMultipleTablesAsync();
-            
+            // await _rt.GetTotalNumberOfCDsAsync();
 
+            // await _rt.GetTotalNumberOfDiscsAsync(); 
 
-            //await _rt.GetArtistRecordEntityAsync(2196);
-            //await _rt.GetRecordDetailsAsync(2196);
-            //await _rt.GetArtistNameFromRecordAsync(2196);
-            //await _rt.GetDiscCountForYearAsync(1974);
-            //await _rt.GetBoughtDiscCountForYearAsync("2000");
-            //await _rt.GetNoRecordReviewAsync();
-            //await _rt.GetNoReviewCountAsync();
-            //await _rt.GetTotalArtistCostAsync();
-            //await _rt.GetTotalArtistDiscsAsync();
-            //await _rt.RecordHtmlAsync(2196);
+            // await _rt.GetTotalNumberOfBluraysAsync();
+
+            // await _rt.GetRecordListAsync();
+
+            //var recordId = 2196;
+            //await _rt.GetRecordDetailsAsync(recordId);
+
+            //var recordId = 2196;
+            //await _rt.GetArtistNameFromRecordAsync(recordId);
+
+            // await _rt.GetTotalArtistCostAsync();
+
+            // await _rt.GetTotalArtistDiscsAsync();
+
+            //var recordId = 2196;
+            //await _rt.RecordHtmlAsync(recordId);
         }
     }
 }

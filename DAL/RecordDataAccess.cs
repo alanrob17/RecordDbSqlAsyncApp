@@ -4,6 +4,7 @@ using Microsoft.Data.SqlClient;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -325,76 +326,32 @@ namespace DAL
             }
         }
 
-        public string GetRecordedYearNumber(int year)
+        public static async Task<List<Record>> NoRecordReviewsAsync()
         {
-            var discs = 0;
+            var records = new List<Record>();
 
             using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            using (var cmd = new SqlCommand("up_NoRecordReviews", cn) { CommandType = CommandType.StoredProcedure })
             {
-                var cmd = new SqlCommand("up_GetRecordedYearNumber", cn) { CommandType = CommandType.StoredProcedure };
+                await cn.OpenAsync();
 
-                cmd.Parameters.AddWithValue("@year", year);
-
-                using (cn)
+                using (var reader = await cmd.ExecuteReaderAsync())
                 {
-                    cn.Open();
-                    discs = (int)cmd.ExecuteScalar();
+                    while (await reader.ReadAsync())
+                    {
+                        var record = new Record
+                        {
+                            ArtistName = reader.Field<string>("Name"),
+                            Name = reader.Field<string>("Record"),
+                            RecordId = reader.Field<int>("RecordId")
+                        };
+
+                        records.Add(record);
+                    }
                 }
             }
 
-            return discs.ToString(CultureInfo.InvariantCulture);
-        }
-
-        /// <summary>
-        /// Get a list of records with no reviews.
-        /// </summary>
-        /// <returns>
-        /// The <see cref="List"/> List of records without reviews.</returns>
-        public List<Record> NoRecordReviews()
-        {
-            var dt = new DataTable();
-
-            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
-            {
-                var sql = "up_NoRecordReviews";
-                var cmd = new SqlCommand(sql, cn) { CommandType = CommandType.StoredProcedure };
-
-                var da = new SqlDataAdapter(cmd);
-                da.Fill(dt);
-            }
-
-            var query = from dr in dt.AsEnumerable()
-                        select new Record
-                        {
-                            ArtistName = dr["Name"].ToString(),
-                            Name = dr["Record"].ToString(),
-                            RecordId = Convert.ToInt32(dr["RecordId"])
-                        };
-
-            return query.ToList();
-        }
-
-        /// <summary>
-        /// Change object to a short date string.
-        /// </summary>
-        /// <param name="bought">
-        /// The bought.
-        /// </param>
-        /// <returns>
-        /// The <see cref="string"/>.
-        /// </returns>
-        public static string ToShortDate(object bought)
-        {
-            var shortDate = "unk";
-
-            if (bought != null)
-            {
-                DateTime dt = Convert.ToDateTime(bought);
-
-                shortDate = Heinemann.Components.Dates.ShortDateString(dt);
-            }
-
-            return shortDate;
+            return records;
         }
 
         public static async Task<Record> GetRecordByNameAsync(string name)
@@ -620,33 +577,202 @@ namespace DAL
             }
         }
 
-        //    /// <summary>
-        //    /// Get total cost for each artist.
-        //    /// </summary>
-        //    /// <returns>The <see cref="IEnumerable"/>list of artists and their total costs.</returns>
-        //    public IEnumerable<Total> GetTotalCosts()
-        //    {
-        //        var dt = new DataTable();
+        public static async Task<int> GetNoReviewCountAsync()
+        {
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            {
+                var cmd = new SqlCommand("up_GetNoRecordReviewCount", cn) { CommandType = CommandType.StoredProcedure };
 
-        //        using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
-        //        {
-        //            var sql = "sp_getTotalsForEachArtist";
-        //            var cmd = new SqlCommand(sql, cn) { CommandType = CommandType.StoredProcedure };
+                await cn.OpenAsync();
 
-        //            var da = new SqlDataAdapter(cmd);
-        //            da.Fill(dt);
-        //        }
+                var result = await cmd.ExecuteScalarAsync();
 
-        //        var query = from dr in dt.AsEnumerable()
-        //                    select new Total
-        //                    {
-        //                        ArtistId = Convert.ToInt32(dr["ArtistId"]),
-        //                        Name = dr["Name"].ToString(),
-        //                        TotalDiscs = Convert.ToInt32(dr["TotalDiscs"]),
-        //                        TotalCost = Convert.ToDecimal(dr["TotalCost"])
-        //                    };
+                if (result != null && result != DBNull.Value)
+                {
+                    return (int)result;
+                }
 
-        //        return query.ToList();
-        //    }
+                return 0;
+            }
+        }
+
+        public static async Task<int> GetBoughtDiscCountForYear(int year)
+        {
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            {
+                var cmd = new SqlCommand("up_GetTotalYearNumber", cn) { CommandType = CommandType.StoredProcedure };
+
+                cmd.Parameters.AddWithValue("@Year", year);
+
+                await cn.OpenAsync();
+
+                var result = await cmd.ExecuteScalarAsync();
+
+                if (result != null && result != DBNull.Value)
+                {
+                    return (int)result;
+                }
+
+                return 0;
+            }
+        }
+
+        public static async Task<int> GetTotalNumberOfDiscsAsync()
+        {
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            {
+                var cmd = new SqlCommand("up_GetTotalNumberOfAllRecords", cn) { CommandType = CommandType.StoredProcedure };
+
+                await cn.OpenAsync();
+
+                var result = await cmd.ExecuteScalarAsync();
+
+                if (result != null && result != DBNull.Value)
+                {
+                    return (int)result;
+                }
+
+                return 0;
+            }
+        }
+
+        public static async Task<int> GetTotalNumberOfBluraysAsync()
+        {
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            {
+                var cmd = new SqlCommand("up_GetTotalNumberOfAllBlurays", cn) { CommandType = CommandType.StoredProcedure };
+
+                await cn.OpenAsync();
+
+                var result = await cmd.ExecuteScalarAsync();
+
+                if (result != null && result != DBNull.Value)
+                {
+                    return (int)result;
+                }
+
+                return 0;
+            }
+        }
+
+        public static async Task<Record> GetRecordDetailsAsync(int recordId)
+        {
+            using (var connection = new SqlConnection(_ap.Instance.ConnectionString))
+            {
+                await connection.OpenAsync();
+
+                var sql = "up_getSingleArtistAndRecord";
+                using (var cmd = new SqlCommand(sql, connection))
+                {
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@RecordId", recordId);
+
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        if (await reader.ReadAsync())
+                        {
+                            return new Record
+                            {
+                                ArtistName = reader.Field<string>("ArtistName"),
+                                ArtistId = reader.Field<int>("ArtistId"),
+                                RecordId = reader.Field<int>("RecordId"),
+                                Name = reader.Field<string>("Name"),
+                                Field = reader.Field<string>("Field"),
+                                Recorded = reader.Field<int>("Recorded"),
+                                Label = reader.Field<string>("Label"),
+                                Pressing = reader.Field<string>("Pressing"),
+                                Rating = reader.Field<string>("Rating"),
+                                Discs = reader.Field<int>("Discs"),
+                                Media = reader.Field<string>("Media"),
+                                Bought = DataConvert.ConvertTo<DateTime>(reader["Bought"], default(DateTime)),
+                                Cost = DataConvert.ConvertTo<decimal>(reader["Cost"], default(decimal)),
+                                CoverName = reader.Field<string>("CoverName"),
+                                Review = reader.Field<string>("Review")
+                            };
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public static async Task<string> GetArtistNameFromRecordAsync(int recordId)
+        {
+            var name = string.Empty;
+
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            {
+                var cmd = new SqlCommand("up_GetArtistNameByRecordId", cn) { CommandType = CommandType.StoredProcedure };
+
+                cmd.Parameters.AddWithValue("@RecordId", recordId);
+
+                await cn.OpenAsync();
+
+                var result = await cmd.ExecuteScalarAsync();
+
+                if (result != null && result != DBNull.Value)
+                {
+                    name = (string)result;
+                }
+            }
+
+            return name;
+        }
+
+        public static async Task<List<dynamic>> GetTotalArtistCostAsync()
+        {
+            var costs = new List<dynamic>();
+
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            using (var cmd = new SqlCommand("sp_getTotalsForEachArtist", cn) { CommandType = CommandType.StoredProcedure })
+            {
+                await cn.OpenAsync();
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        dynamic cost = new ExpandoObject();
+
+                        cost.ArtistId = reader.Field<int>("ArtistId");
+                        cost.Name = reader.Field<string>("Name");
+                        cost.TotalDiscs = reader.Field<int>("TotalDiscs");
+                        cost.TotalCost = reader.Field<decimal>("TotalCost");
+
+                        costs.Add(cost);
+                    }
+                }
+            }
+
+            return costs;
+        }
+
+        public static async Task<List<dynamic>> GetTotalArtistDiscsAsync()
+        {
+            var discs = new List<dynamic>();
+
+            using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
+            using (var cmd = new SqlCommand("sp_getTotalDiscsForEachArtist", cn) { CommandType = CommandType.StoredProcedure })
+            {
+                await cn.OpenAsync();
+
+                using (var reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        dynamic disc = new ExpandoObject();
+
+                        disc.ArtistId = reader.Field<int>("ArtistId");
+                        disc.Name = reader.Field<string>("Name");
+                        disc.TotalDiscs = reader.Field<int>("TotalDiscs");
+
+                        discs.Add(disc);
+                    }
+                }
+            }
+
+            return discs;
+        }
     }
 }
