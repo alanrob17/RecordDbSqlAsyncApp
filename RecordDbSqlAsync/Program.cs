@@ -216,9 +216,9 @@ namespace RecordDbSqlAsync
             //var recordId = 2196;
             //await _rt.GetArtistNameFromRecordAsync(recordId);
 
-            // await _rt.GetTotalArtistCostAsync();
+            //await _rt.GetTotalArtistCostAsync();
 
-            // await _rt.GetTotalArtistDiscsAsync();
+            //await _rt.GetTotalArtistDiscsAsync();
 
             //var recordId = 2196;
             //await _rt.RecordHtmlAsync(recordId);

@@ -287,11 +287,11 @@ namespace RecordDbSqlAsync.Tests
 
         internal static async Task GetTotalArtistCostAsync()
         {
-            List<dynamic> data = new();
+            List<Total> totals = new();
 
-            data = await _rd.GetTotalArtistCostAsync();
+            totals = await _rd.GetTotalArtistCostAsync();
 
-            foreach (var item in data) 
+            foreach (var item in totals) 
             {
                 await Console.Out.WriteLineAsync($"Total cost for {item.Name} with {item.TotalDiscs} discs is ${item.TotalCost:F2}.");
             }
@@ -299,9 +299,9 @@ namespace RecordDbSqlAsync.Tests
 
         internal static async Task GetTotalArtistDiscsAsync()
         {
-            List<dynamic> data = await _rd.GetTotalArtistDiscsAsync();
+            List<Total> totals = await _rd.GetTotalArtistDiscsAsync();
 
-            foreach (var item in data)
+            foreach (var item in totals)
             {
                 await Console.Out.WriteLineAsync($"Total discs for {item.Name} is {item.TotalDiscs}.");
             }

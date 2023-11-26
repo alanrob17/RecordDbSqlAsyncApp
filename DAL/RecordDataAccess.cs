@@ -444,7 +444,7 @@ namespace DAL
             using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
             {
                 var cmd = new SqlCommand("adm_RecordInsert", cn) { CommandType = CommandType.StoredProcedure };
-                 
+
                 cmd.Parameters.AddWithValue("RecordId", record.RecordId);
                 cmd.Parameters.AddWithValue("ArtistId", record.ArtistId);
                 cmd.Parameters.AddWithValue("Name", record.Name);
@@ -720,9 +720,9 @@ namespace DAL
             return name;
         }
 
-        public static async Task<List<dynamic>> GetTotalArtistCostAsync()
+        public static async Task<List<Total>> GetTotalArtistCostAsync()
         {
-            var costs = new List<dynamic>();
+            List<Total> totals = new();
 
             using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
             using (var cmd = new SqlCommand("sp_getTotalsForEachArtist", cn) { CommandType = CommandType.StoredProcedure })
@@ -733,24 +733,26 @@ namespace DAL
                 {
                     while (await reader.ReadAsync())
                     {
-                        dynamic cost = new ExpandoObject();
+                        Total total = new()
+                        {
+                            ArtistId = reader.Field<int>("ArtistId"),
+                            Name = reader.Field<string>("Name"),
+                            TotalDiscs = reader.Field<int>("TotalDiscs"),
+                            TotalCost = reader.Field<decimal>("TotalCost")
+                        };
 
-                        cost.ArtistId = reader.Field<int>("ArtistId");
-                        cost.Name = reader.Field<string>("Name");
-                        cost.TotalDiscs = reader.Field<int>("TotalDiscs");
-                        cost.TotalCost = reader.Field<decimal>("TotalCost");
 
-                        costs.Add(cost);
+                        totals.Add(total);
                     }
                 }
             }
 
-            return costs;
+            return totals;
         }
 
-        public static async Task<List<dynamic>> GetTotalArtistDiscsAsync()
+        public static async Task<List<Total>> GetTotalArtistDiscsAsync()
         {
-            var discs = new List<dynamic>();
+            var totals = new List<Total>();
 
             using (var cn = new SqlConnection(_ap.Instance.ConnectionString))
             using (var cmd = new SqlCommand("sp_getTotalDiscsForEachArtist", cn) { CommandType = CommandType.StoredProcedure })
@@ -761,18 +763,19 @@ namespace DAL
                 {
                     while (await reader.ReadAsync())
                     {
-                        dynamic disc = new ExpandoObject();
+                        Total total = new()
+                        {
+                            ArtistId = reader.Field<int>("ArtistId"),
+                            Name = reader.Field<string>("Name"),
+                            TotalDiscs = reader.Field<int>("TotalDiscs")
+                        };
 
-                        disc.ArtistId = reader.Field<int>("ArtistId");
-                        disc.Name = reader.Field<string>("Name");
-                        disc.TotalDiscs = reader.Field<int>("TotalDiscs");
-
-                        discs.Add(disc);
+                        totals.Add(total);
                     }
                 }
             }
 
-            return discs;
+            return totals;
         }
     }
 }
