@@ -12,60 +12,6 @@ namespace RecordDbSqlAsync.Tests
 {
     internal class RecordTest
     {
-        public static string ToShortDate(DateTime bought)
-        {
-            var shortDate = "unk";
-
-            if (bought != null)
-            {
-                // DateTime dt = Convert.ToDateTime(bought);
-
-                shortDate = Heinemann.Components.Dates.ShortDateString(bought);
-            }
-
-            return shortDate;
-        }
-
-        public static async Task<string> ToString(Record record)
-        {
-            var artist = await _ad.GetArtistByIdAsync(record.ArtistId);
-            var str = new StringBuilder();
-
-            str.Append("<strong>RecordId: </strong>" + record.RecordId + "<br/>");
-            str.Append("<strong>ArtistId: </strong>" + record.ArtistId + "<br/>");
-            str.Append("<strong>ArtistName: </strong>" + artist.Name + "<br/>");
-            str.Append("<strong>Name: </strong>" + record.Name + "<br/>");
-            str.Append("<strong>Field: </strong>" + record.Field + "<br/>");
-            str.Append("<strong>Recorded: </strong>" + record.Recorded + "<br/>");
-            str.Append("<strong>Label: </strong>" + record.Label + "<br/>");
-            str.Append("<strong>Pressing: </strong>" + record.Pressing + "<br/>");
-            str.Append("<strong>Rating: </strong>" + record.Rating + "<br/>");
-            str.Append("<strong>Discs: </strong>" + record.Discs + "<br/>");
-            str.Append("<strong>Media: </strong>" + record.Media + "<br/>");
-
-            if (record.Bought > DateTime.MinValue)
-            {
-                str.Append("<strong>Bought: </strong>" + ToShortDate(record.Bought) + "<br/>");
-            }
-
-            if (!string.IsNullOrEmpty(record.Cost.ToString(CultureInfo.InvariantCulture)))
-            {
-                str.Append($"<strong>Cost: </strong>$" + string.Format("{0:0.00}", record.Cost) + "<br/>");
-            }
-
-            if (!string.IsNullOrEmpty(record.CoverName))
-            {
-                str.Append("<strong>CoverName: </strong>" + record.CoverName + "<br/>");
-            }
-
-            if (!string.IsNullOrEmpty(record.Review))
-            {
-                str.Append("<strong>Review: </strong>" + record.Review + "<br/>");
-            }
-
-            return str.ToString();
-        }
-
         internal static async Task GetRecordsAsync()
         {
             var records = await _rd.SelectAsync();
@@ -371,6 +317,60 @@ namespace RecordDbSqlAsync.Tests
             {
                 await Console.Out.WriteLineAsync(recordString);
             }
+        }
+
+        internal static string ToShortDate(DateTime bought)
+        {
+            var shortDate = "unk";
+
+            if (bought != null)
+            {
+                // DateTime dt = Convert.ToDateTime(bought);
+
+                shortDate = Heinemann.Components.Dates.ShortDateString(bought);
+            }
+
+            return shortDate;
+        }
+
+        internal static async Task<string> ToString(Record record)
+        {
+            var artist = await _ad.GetArtistByIdAsync(record.ArtistId);
+            var str = new StringBuilder();
+
+            str.Append("<strong>RecordId: </strong>" + record.RecordId + "<br/>");
+            str.Append("<strong>ArtistId: </strong>" + record.ArtistId + "<br/>");
+            str.Append("<strong>ArtistName: </strong>" + artist.Name + "<br/>");
+            str.Append("<strong>Name: </strong>" + record.Name + "<br/>");
+            str.Append("<strong>Field: </strong>" + record.Field + "<br/>");
+            str.Append("<strong>Recorded: </strong>" + record.Recorded + "<br/>");
+            str.Append("<strong>Label: </strong>" + record.Label + "<br/>");
+            str.Append("<strong>Pressing: </strong>" + record.Pressing + "<br/>");
+            str.Append("<strong>Rating: </strong>" + record.Rating + "<br/>");
+            str.Append("<strong>Discs: </strong>" + record.Discs + "<br/>");
+            str.Append("<strong>Media: </strong>" + record.Media + "<br/>");
+
+            if (record.Bought > DateTime.MinValue)
+            {
+                str.Append("<strong>Bought: </strong>" + ToShortDate(record.Bought) + "<br/>");
+            }
+
+            if (!string.IsNullOrEmpty(record.Cost.ToString(CultureInfo.InvariantCulture)))
+            {
+                str.Append($"<strong>Cost: </strong>$" + string.Format("{0:0.00}", record.Cost) + "<br/>");
+            }
+
+            if (!string.IsNullOrEmpty(record.CoverName))
+            {
+                str.Append("<strong>CoverName: </strong>" + record.CoverName + "<br/>");
+            }
+
+            if (!string.IsNullOrEmpty(record.Review))
+            {
+                str.Append("<strong>Review: </strong>" + record.Review + "<br/>");
+            }
+
+            return str.ToString();
         }
     }
 }
