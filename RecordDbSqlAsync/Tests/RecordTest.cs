@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using DAL.Models;
 using _rd = DAL.RecordDataAccess;
 using _ad = DAL.ArtistDataAccess;
+using _sd = DAL.StatisticData;
+using DAL;
 
 namespace RecordDbSqlAsync.Tests
 {

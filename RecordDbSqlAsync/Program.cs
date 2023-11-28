@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using _rt = RecordDbSqlAsync.Tests.RecordTest;
 using _at = RecordDbSqlAsync.Tests.ArtistTest;
+using _st = RecordDbSqlAsync.Tests.StatisticTest;
 using DAL.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.VisualBasic;
+using DAL;
+using System.Globalization;
 
 namespace RecordDbSqlAsync
 {
@@ -14,7 +17,7 @@ namespace RecordDbSqlAsync
             //// -----------------------------------------------------------------------------
             //// *** Artist methods ***
 
-            await _at.GetArtistsAsync();
+            //await _at.GetArtistsAsync();
 
             //await _at.GetArtistListAsync();
 
@@ -111,7 +114,7 @@ namespace RecordDbSqlAsync
             //    Name = "Lost In Wonderland",
             //    Field = "Jazz",
             //    Recorded = 2023,
-            //    Label = "Rubber Dubber",
+            //     = "Rubber Dubber",
             //    Pressing = "Aus",
             //    Rating = "****",
             //    Discs = 1,
@@ -130,7 +133,7 @@ namespace RecordDbSqlAsync
             //var name = "Found In Wonderland";
             //var field = "Blues";
             //var recorded = 2023;
-            //var label = "Rubber Dubber Flubber";
+            //var  = "Rubber Dubber Flubber";
             //var pressing = "Aus";
             //var rating = "***";
             //var discs = 2;
@@ -139,7 +142,7 @@ namespace RecordDbSqlAsync
             //var cost = 32.99m;
             //string coverName = null;
             //var review = "This is Charley's second album this year!";
-            //await _rt.CreateRecordAsync(artistId, name, field, recorded, label, pressing, rating, discs, media, bought, cost, coverName, review);
+            //await _rt.CreateRecordAsync(artistId, name, field, recorded, , pressing, rating, discs, media, bought, cost, coverName, review);
 
             //var dateString = "2023/10/28 12:00:00 AM";
             //DateTime date = DateTime.Parse(dateString, System.Globalization.CultureInfo.InvariantCulture);
@@ -149,7 +152,7 @@ namespace RecordDbSqlAsync
             //    Name = "Lost In A Winter Wonderland",
             //    Field = "Rock",
             //    Recorded = 2023,
-            //    Label = "Rubber Dubber Dubber",
+            //     = "Rubber Dubber Dubber",
             //    Pressing = "Am",
             //    Rating = "***",
             //    Discs = 2,
@@ -167,7 +170,7 @@ namespace RecordDbSqlAsync
             //var name = "Lost In A Winter Wonderland";
             //var field = "Rock";
             //var recorded = 2023;
-            //var label = "Rubber Dubber Ducky";
+            //var  = "Rubber Dubber Ducky";
             //var pressing = "Aus";
             //var rating = "****";
             //var discs = 1;
@@ -176,7 +179,7 @@ namespace RecordDbSqlAsync
             //var cost = 65.50m;
             //string coverName = null;
             //var review = "This is Charley's first rockin' Christmas album.";
-            //await _rt.UpdateRecordAsync(recordId, name, field, recorded, label, pressing, rating, discs, media, bought, cost, coverName, review);
+            //await _rt.UpdateRecordAsync(recordId, name, field, recorded, , pressing, rating, discs, media, bought, cost, coverName, review);
 
             //var recordId = 5269;
             //await _rt.DeleteRecordAsync(recordId);
@@ -222,6 +225,12 @@ namespace RecordDbSqlAsync
 
             //var recordId = 2196;
             //await _rt.RecordHtmlAsync(recordId);
+
+            //// -----------------------------------------------------------------------------
+            //// *** Statistic methods ***
+
+            await _st.PrintStatistics();
+
         }
     }
 }
